@@ -1,0 +1,245 @@
+<html>
+<head>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+<script type="text/javascript">
+	// ID Bomb = 4
+	var HOST_URL = window.location.host + "" + window.location.pathname;
+	var boardSize = 25;
+	var lastPosition;
+	
+	function writeResponse(text){
+            alert(text);
+    }
+
+    var webSocket;
+
+	function openSocket(){
+        if(webSocket !== undefined && webSocket.readyState !== WebSocket.CLOSED){
+            writeResponse("WebSocket is already opened.");
+            return;
+        }
+
+        webSocket = new WebSocket("ws://" + HOST_URL + "ws");
+         
+        webSocket.onopen = function(event){
+            if(event.data === undefined) 
+                return;
+
+        };
+
+        webSocket.onmessage = function(event){
+
+            var obj = JSON.parse(event.data);
+
+            if (obj.type == "player") {
+            	processPosition(obj.payload, obj.id);
+            } else if (obj.type == "update") {
+            	var tileId = obj.id; 
+            	var newValue = obj.payload;
+            	updateTile (tileId, newValue);
+            } else if (obj.type == "level") {
+            	renderWorldForString(obj.payload);
+            } else if (obj.type == "gameover") {
+              	alert("Game is over! Player won with ID: " + obj.payload);
+            }
+        };
+
+        webSocket.onclose = function(event){
+            writeResponse("Connection closed");
+        };
+    }
+	
+	function updateTile (tileId, newValue) {
+		var className = getClassNameForType(newValue, tileId);
+		if (document.getElementById(tileId).className.indexOf("gamePlayer") != -1) {
+			className += " gamePlayer";	
+		}
+		document.getElementById(tileId).className = className;
+	} 
+
+	function processPosition(data, playerid) {
+		var playerValue = data;	
+		  drawPlayerOnPosition(playerValue, playerid);
+	}
+
+
+	function renderWorldForString(data) {
+		document.getElementById("board").innerHTML = "";
+		var renderString = data; 
+		for (var i = 0, len = renderString.length; i < len; i++) {
+		  var type = renderString[i];
+		  renderElement(i, type);
+		}
+	}
+
+	function getLastPositionForPlayer (playerId) {
+		return document.querySelectorAll("[data-player" + playerId + "='true']")[0];
+
+	}
+
+	function drawPlayerOnPosition (playerPosition, playerId) {
+		lastPosition = getLastPositionForPlayer(playerId);
+
+		if (lastPosition != null) {
+			lastPosition.className = lastPosition.className.replace("gamePlayer", "");
+			delete lastPosition.dataset["player" + playerId];
+			lastPosition.innerHTML = "";
+		}
+		
+		document.getElementById(playerPosition).className =  document.getElementById(playerPosition).className + " gamePlayer";
+		document.getElementById(playerPosition).dataset["player" + playerId] = "true";
+		document.getElementById(playerPosition).innerHTML = playerId;
+	}
+
+	function getClassNameForType (type, elementId) {
+		var classIdentifier;
+
+		if (type == "1") {
+			classIdentifier = "gameElement wall";
+		} else if (type == "2") {
+			classIdentifier = "gameElement goal";
+		} else if (type == "4") {
+			classIdentifier = "gameElement bomb"; 
+		} else if (type == "5") {
+			classIdentifier = "gameElement rock";
+		} else if (type == "6") {
+			classIdentifier = "gameElement explode";
+		} else if (type == "7") {
+			classIdentifier = "gameElement roasted";
+		} else if (type == "8") {
+			classIdentifier = "gameElement enemy";
+		} else {
+			classIdentifier = "gameElement";
+		}
+
+		if ((elementId)%boardSize == 0) {
+			classIdentifier = classIdentifier + " newLine";
+		}
+
+		return classIdentifier
+	}
+
+	function renderElement(elementId, type) {
+		var node = document.createElement("div");         
+		node.id = elementId;      
+
+		node.className = getClassNameForType(type, elementId);
+		document.getElementById("board").appendChild(node);
+	}
+
+	var audio = new Audio('bg.mp3');
+	audio.play();
+	document.addEventListener("DOMContentLoaded", function(event) { 
+	  openSocket();
+	  document.addEventListener("keydown",keyDownHandler, false);	
+
+	});
+
+
+	// Controls
+	function keyDownHandler(event) {
+	var keyPressed = String.fromCharCode(event.keyCode);
+
+	if (keyPressed == "W") {		
+		webSocket.send("up");
+	}
+	else if (keyPressed == "D") {	
+		webSocket.send("right");		
+	}
+	else if (keyPressed == "S") {	
+		webSocket.send("down");	
+	}
+	else if (keyPressed == "A") {	
+		webSocket.send("left");	
+	} 
+	else if (keyPressed == " ") {	
+		webSocket.send("space");	
+	}
+}
+
+
+</script>
+</head>
+<body>
+
+<style>
+
+
+.gameElement {
+	width: 25px;
+	height: 25px;
+	background-color: green;
+	float:left;
+	color: white;
+	font-weight: bold;
+}
+.newLine {
+	clear:both;
+}
+
+.board {
+	background-color: darkgreen;
+	width: 50%;
+    margin: 0 auto; 
+}
+
+.wall {
+	background-image: url("sprites/rock.png");
+	    background-size: 100%;
+	    background-color: green;
+}
+.goal {
+	background-image: url("sprites/princess.png");
+	    background-size: 100%;		
+}
+
+.enemy {
+	background-image: url("sprites/enemy.png");
+	    background-size: 100%;		
+	
+}
+
+.rock {
+	
+	background-image: url("sprites/wall.png");
+		    background-size: 100%;
+
+}
+
+.roasted {
+	background-image: url("sprites/meat.png");
+		    background-size: 100%;
+
+
+}
+
+.bomb {
+	background-image: url("sprites/bomb.png");
+		    background-size: 100%;
+
+}
+
+.explode {
+		background-image: url("sprites/explode.png");
+		    background-size: 100%;
+}
+
+body {
+	margin: 0px;
+	padding: 0px;
+	background-image: url("sprites/wall.png");
+	background-size: 25px;
+	background-color: darkgreen;
+}
+
+.gamePlayer {
+	    background-image: url("sprites/player.png");
+	    background-size: 100%;
+}
+</style>
+
+<div id="board">
+</div>
+</body>
+</html>
