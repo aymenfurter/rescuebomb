@@ -4,7 +4,7 @@ A 2d multiplayer game based on Java & JS. Network Communication using Websockets
 ## Authors
 Herrmann Schweizer - Implementation of Maze Generation (Randomized Prims algorithm), Server side 
 
-Patrick Lüthi (waiting for confirmation of citation) - Implementation Server side (Java)
+Patrick Lüthi - Implementation Server side (Java)
 
 Aymen Furter - Implementation Client side (JS)
 
