@@ -9,7 +9,7 @@ Patrick Lüthi - Implementation Server side (Java)
 Aymen Furter - Implementation Client side (JS)
 
 ## Demo
-[Open Demo](http://rescuebomb.aymenfurter.ch:8050/)
+[Open Demo](http://rescuebomb.aymenfurter.ch)
 
 ## Screenshot
 ![alt tag](http://i.imgur.com/ea0Igd0.png)
