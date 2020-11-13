@@ -1,5 +1,5 @@
 ## RescueBomb
-A 2d multiplayer game based on Java & JS. Network Communication using Websockets. Implemented as part of the PRODYNA Hackathon 2016 (CH).
+A 2d multiplayer game based on Java & JS. Network Communication using Websockets. Winning submission of the PRODYNA Hackathon 2016 (CH).
 
 ## Authors
 Herrmann Schweizer - Implementation of Maze Generation (Randomized Prims algorithm), Server side 
