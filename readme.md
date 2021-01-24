@@ -16,3 +16,6 @@ Aymen Furter - Implementation Client side (JS)
 
 ## Assets
 Game Sprites by opengamarts.org, Licensed as Public Domain-
+
+## Disaster Recovery
+This Repository is/will be backed up at a secondary astronomical region: https://github.com/aymenfurter/rescuebomb/blob/master/backup.png
